@@ -8,6 +8,9 @@ class PowerSupply(object):
     def __init__(self, ip, port):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_address = (ip, port)
+        self.current = 1
+        self.duty = 0.5
+        self.period = 1
 
     def connect(self):
         try:
@@ -24,9 +27,17 @@ class PowerSupply(object):
         self.send_to_device(':CHAN1:SOUR:CURR:PULS:WIDT {:2.2g}ms'.format(duty*period))
         self.send_to_device(':CHAN1:SOUR:CURR:LEV {:2.2g}mA'.format(current))
         self.send_to_device(':CHAN1:SOUR:CURR:PULS:BASE 1nA')
+        # Finally we store the parameters
+        self.period = period
+        self.current = current
 
-    def set_duty(self, duty, period):
-        self.send_to_device(':CHAN1:SOUR:CURR:PULS:WIDT {:2.2g}ms'.format(duty * period))
+    def set_duty(self, duty):
+        self.send_to_device(':CHAN1:SOUR:CURR:PULS:WIDT {:2.2g}ms'.format(duty * self.period))
+        self.duty = duty
+
+    def set_current(self, current):
+        self.send_to_device(':CHAN1:SOUR:CURR:LEV {:2.2g}mA'.format(current))
+        self.current = current
 
     def send_to_device(self, query):
         print(query)
