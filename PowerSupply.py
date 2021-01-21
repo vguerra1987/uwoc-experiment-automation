@@ -19,6 +19,7 @@ class PowerSupply(object):
     # Period must be expressed in milliseconds, duty in percentage, and current in mA
     def initial_configuration(self, period, duty, current):
         self.send_to_device(':CHAN1:SOUR:FUNC CURR')
+        self.send_to_device(':CHAN1:SOUR:SHAP PULS')
         self.send_to_device(':TRIG:TIM1 {:2.2g}ms'.format(period))
         self.send_to_device(':CHAN1:SOUR:CURR:PULS:WIDT {:2.2g}ms'.format(duty*period))
         self.send_to_device(':CHAN1:SOUR:CURR:LEV {:2.2g}mA'.format(current))
